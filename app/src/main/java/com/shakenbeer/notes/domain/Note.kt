@@ -1,16 +1,23 @@
 package com.shakenbeer.notes.domain
 
+import androidx.room.Embedded
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import java.time.Instant
 import java.util.UUID
 
+@Entity(tableName = "notes")
 class Note {
 
-    val id: UUID = UUID.randomUUID()
-    val createdAt: Instant = Instant.now()
+    @PrimaryKey
+    var id: UUID = UUID.randomUUID()
+    var createdAt: Instant = Instant.now()
 
-    private var content: NodeContent = NodeContent.EMPTY
+    @Embedded
+    var content: NodeContent = NodeContent.EMPTY
 
-    private var reminder: Reminder? = null
+    @Embedded(prefix = "reminder_")
+    var reminder: Reminder? = null
 
     val title: String
         get() = content.title
