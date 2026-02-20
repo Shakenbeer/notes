@@ -4,7 +4,9 @@ import android.content.Context
 import androidx.room.Room
 import com.shakenbeer.notes.data.NoteRepositoryImpl
 import com.shakenbeer.notes.data.db.NoteDatabase
+import com.shakenbeer.notes.domain.NoteLab
 import com.shakenbeer.notes.domain.NoteRepository
+import com.shakenbeer.notes.notification.AndroidNotificationService
 
 object Injector {
 
@@ -18,7 +20,11 @@ object Injector {
         applicationContext = context.applicationContext
     }
 
-    fun getNoteRepository(): NoteRepository {
+    private fun getNoteRepository(): NoteRepository {
         return NoteRepositoryImpl(noteDatabase.noteDao())
+    }
+
+    fun getNoteLab(): NoteLab {
+        return NoteLab(getNoteRepository(), AndroidNotificationService(applicationContext))
     }
 }

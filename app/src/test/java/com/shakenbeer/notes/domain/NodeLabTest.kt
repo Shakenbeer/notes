@@ -14,14 +14,14 @@ class NodeLabTest {
 
     @Test
     fun `if reminder is not set when note is saved then notification is cleared`() = runBlocking {
-        val note = Note()
+        val note = Note(reminder = null)
         noteLab.save(note)
         verify(notificationService).clearNotification(note)
     }
 
     @Test
     fun `if reminder is set when note is saved then notification is scheduled`() = runBlocking {
-        val note = Note().also { it.setReminder(Instant.now()) }
+        val note = Note(reminder = Reminder(Instant.now()))
         noteLab.save(note)
         verify(notificationService).scheduleNotification(note)
     }

@@ -7,7 +7,7 @@ class NoteLab(
     suspend fun notes() = noteRepository.getNotes()
     suspend fun save(note: Note) {
         noteRepository.saveNote(note)
-        if (note.isScheduled)
+        if (note.reminder != null)
             notificationService.scheduleNotification(note)
         else
             notificationService.clearNotification(note)
