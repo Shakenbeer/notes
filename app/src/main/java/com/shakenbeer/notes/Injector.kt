@@ -6,6 +6,7 @@ import com.shakenbeer.notes.data.NoteRepositoryImpl
 import com.shakenbeer.notes.data.db.NoteDatabase
 import com.shakenbeer.notes.domain.NoteLab
 import com.shakenbeer.notes.domain.NoteRepository
+import com.shakenbeer.notes.domain.NotificationService
 import com.shakenbeer.notes.notification.AndroidNotificationService
 
 object Injector {
@@ -16,15 +17,19 @@ object Injector {
         Room.databaseBuilder(applicationContext, NoteDatabase::class.java, "notes.db").build()
     }
 
+    private val noteRepository: NoteRepository by lazy {
+        NoteRepositoryImpl(noteDatabase.noteDao())
+    }
+
+    private val notificationService: NotificationService by lazy {
+        AndroidNotificationService(applicationContext)
+    }
+
+    val noteLab: NoteLab by lazy {
+        NoteLab(noteRepository, notificationService)
+    }
+
     fun init(context: Context) {
         applicationContext = context.applicationContext
-    }
-
-    private fun getNoteRepository(): NoteRepository {
-        return NoteRepositoryImpl(noteDatabase.noteDao())
-    }
-
-    fun getNoteLab(): NoteLab {
-        return NoteLab(getNoteRepository(), AndroidNotificationService(applicationContext))
     }
 }

@@ -15,4 +15,10 @@ data class Note(
     val content: NodeContent = NodeContent.EMPTY,
     @Embedded(prefix = "reminder_")
     val reminder: Reminder? = null
-)
+) {
+    companion object {
+        fun create(title: String, body: String): Note {
+            return Note(content = NodeContent(title, body))
+        }
+    }
+}
