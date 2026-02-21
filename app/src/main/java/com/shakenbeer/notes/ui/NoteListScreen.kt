@@ -1,23 +1,49 @@
 package com.shakenbeer.notes.ui
 
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
+import androidx.compose.foundation.lazy.staggeredgrid.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.shakenbeer.notes.R
 import com.shakenbeer.notes.domain.NodeContent
 import com.shakenbeer.notes.domain.Note
+import com.shakenbeer.notes.domain.Reminder
 import com.shakenbeer.notes.ui.theme.NotesTheme
+import java.time.Instant
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 
 @Composable
 fun NoteListDestination(
@@ -34,17 +60,79 @@ private fun NoteListScreen(
     modifier: Modifier = Modifier,
     uiState: NoteListUiState
 ) {
-    Column(modifier = modifier) {
-        LazyColumn {
-            items(uiState.notes) { note ->
+    LazyVerticalStaggeredGrid(
+        columns = StaggeredGridCells.Fixed(2),
+        modifier = modifier,
+        contentPadding = PaddingValues(16.dp),
+        verticalItemSpacing = 16.dp,
+        horizontalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        items(uiState.notes) { note ->
+            NoteItem(note = note)
+        }
+    }
+}
+
+@Composable
+fun NoteItem(note: Note, modifier: Modifier = Modifier) {
+    Card(
+        modifier = modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFFFFFFF)),
+        border = BorderStroke(1.dp, Color(0xFFE2E8F0))
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(
+                text = note.content.title,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
+                fontWeight = FontWeight.Bold,
+                lineHeight = 28.sp,
+                fontSize = 18.sp,
+                color = Color(0xFF0F172A)
+            )
+
+            if (note.content.body.isNotBlank()) {
+                Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = note.content.title,
-                    modifier = Modifier.padding(16.dp)
+                    text = note.content.body,
+                    maxLines = 6,
+                    overflow = TextOverflow.Ellipsis,
+                    fontWeight = FontWeight.Normal,
+                    lineHeight = 20.sp,
+                    fontSize = 14.sp,
+                    color = Color(0xFF1E293B)
                 )
+            }
+
+            note.reminder?.let {
+                Spacer(modifier = Modifier.height(12.dp))
+                Row(
+                    modifier = Modifier.clickable { /* TODO: Handle reminder click */ },
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_clock_12px),
+                        contentDescription = "Reminder",
+                        modifier = Modifier.size(12.dp),
+                        tint = Color(0xFF1E40AF)
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    val formatter = DateTimeFormatter.ofPattern("dd MMM, HH:mm")
+                        .withZone(ZoneId.systemDefault())
+                    Text(
+                        text = formatter.format(it.timestamp),
+                        fontWeight = FontWeight.SemiBold,
+                        lineHeight = 15.sp,
+                        fontSize = 10.sp,
+                        color = Color(0xFF1E40AF)
+                    )
+                }
             }
         }
     }
 }
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview(showBackground = true, showSystemUi = true)
@@ -60,7 +148,8 @@ fun NoteListScreenPreview() {
                             content = NodeContent(
                                 "Spaghetti Carbonara",
                                 "A classic Roman pasta dish made with eggs, cheese, pancetta, and black pepper. The heat of the pasta cooks the eggs, creating a creamy sauce."
-                            )
+                            ),
+                            reminder = Reminder(Instant.now().plusSeconds(3600))
                         ),
                         Note(
                             content = NodeContent(
