@@ -1,4 +1,4 @@
-package com.shakenbeer.notes.ui
+package com.shakenbeer.notes.ui.list
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
@@ -16,6 +16,7 @@ import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -48,7 +49,7 @@ import java.time.format.DateTimeFormatter
 @Composable
 fun NoteListDestination(
     modifier: Modifier = Modifier,
-    viewModel: NoteListViewModel = viewModel(factory = ViewModelFactory())
+    viewModel: NoteListViewModel = viewModel(factory = NoteListViewModel.Factory)
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
@@ -60,9 +61,10 @@ fun NoteListDestination(
 private fun NoteListScreen(
     modifier: Modifier = Modifier,
     uiState: NoteListUiState,
-    onNoteClick: (Note) -> Unit
+    onNoteClick: (Note) -> Unit,
 ) {
     Scaffold(topBar = { TopAppBar(title = { Text("Notes") }) }) {
+        Button(onClick = { /* TODO: Handle button click */ }) { }
         LazyVerticalStaggeredGrid(
             columns = StaggeredGridCells.Fixed(2),
             modifier = modifier.padding(it),
