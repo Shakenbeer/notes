@@ -45,15 +45,21 @@ import com.shakenbeer.notes.ui.theme.NotesTheme
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import java.util.UUID
 
 @Composable
 fun NoteListDestination(
-    modifier: Modifier = Modifier,
+    onNoteClick: (UUID) -> Unit,
+    onNewNoteClick: () -> Unit,
     viewModel: NoteListViewModel = viewModel(factory = NoteListViewModel.Factory)
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
-    NoteListScreen(modifier, uiState, onNoteClick = { /* TODO: Handle note click */ })
+    NoteListScreen(
+        uiState = uiState,
+        onNoteClick = { note -> onNoteClick(note.id) },
+        onNewNoteClick = onNewNoteClick
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -62,9 +68,10 @@ private fun NoteListScreen(
     modifier: Modifier = Modifier,
     uiState: NoteListUiState,
     onNoteClick: (Note) -> Unit,
+    onNewNoteClick: () -> Unit,
 ) {
     Scaffold(topBar = { TopAppBar(title = { Text("Notes") }) }) {
-        Button(onClick = { /* TODO: Handle button click */ }) { }
+        Button(onClick = onNewNoteClick) { }
         LazyVerticalStaggeredGrid(
             columns = StaggeredGridCells.Fixed(2),
             modifier = modifier.padding(it),
@@ -242,7 +249,8 @@ fun NoteListScreenPreview() {
                         )
                 )
             ),
-            onNoteClick = {}
+            onNoteClick = {},
+            onNewNoteClick = {}
         )
     }
 }

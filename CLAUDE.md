@@ -37,7 +37,7 @@ This is an Android notes app using Jetpack Compose, Room, and a manual DI patter
 
 **Dependency injection:** Manual via `Injector` singleton (no Hilt/Dagger). `Injector.init(context)` is called in `NotesApplication`. ViewModels pull from `Injector.noteLab` inside their `Factory`.
 
-**Navigation:** Not yet wired — `NoteListDestination` is set as the root in `MainActivity` directly; `NoteDestination` exists but is not reachable from the list screen yet.
+**Navigation:** Uses Jetpack Navigation 3. `MainActivity` owns a `mutableStateListOf` back stack and a `NavDisplay` with two routes: `NoteListRoute` and `NoteRoute(id: UUID)`. Tapping a note card pushes `NoteRoute`; the empty button pushes a new `NoteRoute` with a fresh UUID.
 
 **`Note` entity:** Uses `@Embedded` for `NodeContent` (columns: `title`, `body`) and `@Embedded(prefix = "reminder_")` for `Reminder` (column: `reminder_timestamp`). The primary key is a `UUID` stored as a `String`.
 
